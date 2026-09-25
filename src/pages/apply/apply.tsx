@@ -259,6 +259,7 @@ if (!correo.trim()) {
   // Selectores
   if (!carrera) nuevosErrores["carrera"] = "Debes seleccionar tu carrera";
   if (!anioIngreso) nuevosErrores["anioIngreso"] = "Debes seleccionar tu año de ingreso";
+  else if (!añosIngreso.includes(anioIngreso)) nuevosErrores["anioIngreso"] = "Selecciona un año dentro de los últimos 10 años o el actual";
   if (!anioMalla) nuevosErrores["anioMalla"] = "Debes seleccionar tu año que cursas";
   if (!disponibilidad) nuevosErrores["disponibilidad"] = "Debes seleccionar tu disponibilidad";
 
@@ -443,7 +444,10 @@ const toggleDisponibilidad = () => setDisponibilidadOpen(!disponibilidadOpen);
         { id: 5, nombre: "5 horas" }, { id: 6, nombre: "6 horas" }
     ];
 
-    const añosIngreso = ["2015","2016","2017","2018","2019","2020","2021", "2022", "2023", "2024","2025",];
+    const anioActualIngreso = Number(new Intl.DateTimeFormat('en', {
+      year: 'numeric', timeZone: 'America/Santiago',
+    }).format(new Date()));
+    const añosIngreso = Array.from({ length: 11 }, (_, indice) => String(anioActualIngreso - indice));
 
   // Accordion preguntas frecuentes
   const [openQuestionIndex, setOpenQuestionIndex] = useState<number | null>(null);

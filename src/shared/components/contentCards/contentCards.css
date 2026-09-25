@@ -1,0 +1,34 @@
+.content-grid { display: grid; gap: 1rem; list-style: none; margin: 0; padding: 0; }
+.projects-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; }
+.members-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.content-card { min-width: 0; overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; background: rgba(255,255,255,.035); }
+.project-preview-card.status-activo { color: #4fc3d4; }
+.project-preview-card.status-planificacion { color: #c9a227; }
+.project-preview-card.status-bloqueado { color: #d46b6b; }
+.project-preview-card.status-pausado { color: #c9a227; }
+.project-preview-card.status-completado { color: #73c991; }
+.project-preview-card.status-cancelado { color: #d46b6b; }
+.project-preview-card { min-width: 0; padding-top: 1rem; border-top: 2px solid currentColor; }
+.project-meta { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: inherit; font-size: .72rem; font-weight: 800; letter-spacing: .1em; line-height: 1.4; text-transform: uppercase; }
+.project-meta span { color: inherit; }
+.project-status-dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: currentColor; }
+.project-preview-card h3 { margin: 6px 0 0; color: var(--text-color); font-size: 1.08rem; font-weight: 800; }
+.project-description { margin: 6px 0 0; color: rgba(221,221,221,.6); font-size: .88rem; line-height: 1.45; }
+.member-preview-card { padding: 1.4rem 1.2rem; text-align: center; }
+.member-avatar { display: grid; width: 56px; height: 56px; margin: 0 auto; place-items: center; border-radius: 50%; color: #fff; background: linear-gradient(135deg,#65428A,#0097A9); font-size: 1.1rem; font-weight: 800; }
+.member-preview-card h3 { margin: .8rem 0 0; font-size: .98rem; font-weight: 800; }
+.member-role { margin: 3px 0 0; color: #7fd3e0; font-size: .8rem; font-weight: 700; }
+.member-specialties { margin: 3px 0 0; color: rgba(221,221,221,.5); font-size: .8rem; line-height: 1.45; }
+body.light .content-card { border-color: rgba(12,3,14,.1); background: rgba(12,3,14,.025); }
+body.light .project-description,
+body.light .member-specialties { color: rgba(12,3,14,.6); }
+
+@media (max-width: 900px) {
+  .projects-grid,
+  .members-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .projects-grid,
+  .members-grid { grid-template-columns: minmax(0, 1fr); }
+}
