@@ -17,6 +17,11 @@ const preguntas = [
   },
 ];
 
+function sanitizeTextInput(value: string): string {
+  return value.replace(/[^\p{L}\p{N}\p{P}\p{Zs}\n]/gu, '');
+}
+
+
 function Apply() {
 
   const refs = {
@@ -254,12 +259,13 @@ if (!correo.trim()) {
   // Selectores
   if (!carrera) nuevosErrores["carrera"] = "Debes seleccionar tu carrera";
   if (!anioIngreso) nuevosErrores["anioIngreso"] = "Debes seleccionar tu año de ingreso";
+  else if (!añosIngreso.includes(anioIngreso)) nuevosErrores["anioIngreso"] = "Selecciona un año dentro de los últimos 10 años o el actual";
   if (!anioMalla) nuevosErrores["anioMalla"] = "Debes seleccionar tu año que cursas";
   if (!disponibilidad) nuevosErrores["disponibilidad"] = "Debes seleccionar tu disponibilidad";
 
   // Áreas: exactamente 3
-  if (areasSeleccionadas.length !== 3) 
-    nuevosErrores["areas"] = "Debes seleccionar exactamente 3 áreas";
+  if (areasSeleccionadas.length === 0) 
+    nuevosErrores["areas"] = "Debes seleccionar al menos 1 área";
 
   // Textareas
   const textareas = ["ayudantia", "unirse", "proyectos", "redes", "nombresMas", "pitch"];
@@ -283,11 +289,7 @@ try{
       rut: (document.getElementById("rut") as HTMLInputElement)?.value.replace(/\./g, "") || "",
       edad: Number(edad),
       correo_institucional: correo,
-      campus: carrera.includes("Ñuñoa")
-        ? "Campus Ñuñoa"
-        : carrera.includes("Central")
-        ? "Campus Central"
-        : "Campus Providencia",
+      campus: obtenerCampusDesdeCarrera(carrera),
       carrera,
       anio_ingreso: Number(anioIngreso),
       anio_actual: Number(anioMalla),
@@ -303,7 +305,6 @@ try{
       pitch: (document.getElementById("pitch") as HTMLTextAreaElement)?.value || "",
       apodo: (document.getElementById("apodo") as HTMLTextAreaElement)?.value || ""
     };
-
     const result = await postularUsuario(datos);
 
     if (result?.responseCode === "I001") {
@@ -443,7 +444,10 @@ const toggleDisponibilidad = () => setDisponibilidadOpen(!disponibilidadOpen);
         { id: 5, nombre: "5 horas" }, { id: 6, nombre: "6 horas" }
     ];
 
-    const añosIngreso = ["2015","2016","2017","2018","2019","2020","2021", "2022", "2023", "2024","2025",];
+    const anioActualIngreso = Number(new Intl.DateTimeFormat('en', {
+      year: 'numeric', timeZone: 'America/Santiago',
+    }).format(new Date()));
+    const añosIngreso = Array.from({ length: 11 }, (_, indice) => String(anioActualIngreso - indice));
 
   // Accordion preguntas frecuentes
   const [openQuestionIndex, setOpenQuestionIndex] = useState<number | null>(null);
@@ -489,6 +493,14 @@ useEffect(() => {
   }
 }, [isModalOpen]);
 
+const obtenerCampusDesdeCarrera = (nombreCarrera: string): string => {
+  for (const [campus, lista] of Object.entries(carreras)) {
+    if (lista.some(c => c.nombre === nombreCarrera)) {
+      return campus;
+    }
+  }
+  return "Campus desconocido";
+};
 
 
   return (
@@ -636,7 +648,15 @@ useEffect(() => {
             <p className="campo-ayuda">
               En caso de que no, ¿te gustaría serlo? Cuéntanos brevemente.
             </p>
-            <textarea ref={refs.ayudantia} id="ayudantia" required></textarea>
+            <textarea 
+                ref={refs.ayudantia} 
+                id="ayudantia" 
+                required
+                onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.value = sanitizeTextInput(target.value);
+                }}
+                ></textarea>
           </div>
           {errores["ayudantia"] && <p className="error">{errores["ayudantia"]}</p>}
 
@@ -665,7 +685,15 @@ useEffect(() => {
             <p className="campo-ayuda">
               motivaciones, expectativas y lo que más te gustaría lograr con nosotros.
             </p>
-            <textarea ref={refs.unirse} id="unirse" required></textarea>
+            <textarea 
+                ref={refs.unirse} 
+                id="unirse" 
+                required
+                onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.value = sanitizeTextInput(target.value);
+                }}
+                ></textarea>
           </div>
           {errores["unirse"] && <p className="error">{errores["unirse"]}</p>}
 
@@ -676,7 +704,15 @@ useEffect(() => {
             <p className="campo-ayuda">
               Queremos conocer tus ideas, no importa si están en borrador.
             </p>
-            <textarea ref={refs.proyectos} id="proyectos" required></textarea>
+            <textarea 
+                ref={refs.proyectos} 
+                id="proyectos" 
+                required
+                onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.value = sanitizeTextInput(target.value);
+                }}
+                ></textarea>
           </div>
           {errores["proyectos"] && <p className="error">{errores["proyectos"]}</p>}
 
@@ -687,12 +723,28 @@ useEffect(() => {
             <p className="campo-ayuda">
               Github, instagram, behance, etc.
             </p>
-            <textarea ref={refs.redes} id="redes" required></textarea>
+            <textarea 
+                ref={refs.redes} 
+                id="redes" 
+                required
+                onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.value = sanitizeTextInput(target.value);
+                }}
+                ></textarea>
           </div>
           {errores["redes"] && <p className="error">{errores["redes"]}</p>}
 
             <label>14. ¿Te estás postulando con alguien más? Déjanos sus nombres.</label>
-            <textarea ref={refs.nombresMas} id="nombresMas" required></textarea>
+            <textarea 
+                ref={refs.nombresMas} 
+                id="nombresMas" 
+                required
+                onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.value = sanitizeTextInput(target.value);
+                }}
+                ></textarea>
             {errores["nombreMas"] && <p className="error">{errores["nombreMas"]}</p>}
 
             <div>
@@ -702,12 +754,28 @@ useEffect(() => {
             <p className="campo-ayuda">
               Cuéntanos en menos de 5 líneas quién eres, que te motiva y que te gusta hacer en tu tiempo libre.
             </p>
-            <textarea ref={refs.pitch} id="pitch" required></textarea>
+            <textarea 
+                ref={refs.pitch} 
+                id="pitch" 
+                required
+                onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.value = sanitizeTextInput(target.value);
+                }}
+                ></textarea>
           </div>
           {errores["pitch"] && <p className="error">{errores["pitch"]}</p>}
 
             <label>16. Apodo o nombre por el que prefieras ser llamado.</label>
-            <textarea ref={refs.apodo} id="apodo" required></textarea>
+            <textarea 
+                ref={refs.apodo} 
+                id="apodo" 
+                required
+                onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.value = sanitizeTextInput(target.value);
+                }}
+                ></textarea>
             {errores["apodo"] && <p className="error">{errores["apodo"]}</p>}
             {/*
             <label>17. Emoji de tu animal favorito (o uno que te represente)</label>

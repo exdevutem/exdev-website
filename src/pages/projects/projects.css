@@ -1,0 +1,4 @@
+.projects-page { min-height: 70vh; padding: 7rem 5% 5rem; }
+.projects-page-header { max-width: 680px; margin-bottom: 2rem; }
+.projects-page-header h1 { padding-top: 0; }
+.projects-page-header > p:last-child { color: var(--text-color); line-height: 1.6; }

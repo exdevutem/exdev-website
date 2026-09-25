@@ -90,7 +90,7 @@ body.light .theme-switch .switch-thumb{
 }
 
 
-@media (max-width: 400px) {
+@media (max-width: 1000px) {
   
   .logo-container{
     padding-left: 2rem;
@@ -100,11 +100,12 @@ body.light .theme-switch .switch-thumb{
   }
 }
 
-@media (max-width: 320px) {
+@media (max-width: 450px) {
   .nav{
-    padding-right: 1rem;
+    padding-right: 0.5rem;
+    gap: 0.5rem;
   }
   .logo-container{
-    padding-left: 1rem;
+    padding-left: 0.5rem;
   }
 }
