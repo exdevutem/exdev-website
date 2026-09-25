@@ -1,112 +1,91 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './home.css';
-//assets
-//img
-
 import GalleryIMG1 from '../../assets/img/IMG_9483.webp';
 import GalleryIMG2 from '../../assets/img/IMG_9468.webp';
 import GalleryIMG3 from '../../assets/img/feria-exdev-img4.webp';
 import GalleryIMG4 from '../../assets/img/feria-exdev-5.webp';
-
-//img projects
-import MiUTEMIMG from '../../assets/img/mi-utem-img.webp';
-import SimRacingIMG from '../../assets/img/sim-racing.webp';
-import ProjectWIMG from '../../assets/img/ProjectWArduino.webp';
-import CharlaExdevIMG from '../../assets/img/talleres-exdev-img.webp'
-
-//svg
 import GitHubIcon from '../../shared/icons/GitHubIcon';
 import LinkedInIcon from '../../shared/icons/LinkedIn';
 import InstagramIcon from '../../shared/icons/InstagramIcon';
+import { MemberCard, ProjectCard } from '../../shared/components/contentCards/contentCards';
+import { getPublicMembers, getPublicProjects } from '../../shared/services/contentService';
+import { PublicMember, PublicProject } from '../../shared/types/content';
+import EventsAgenda from '../../shared/components/eventsAgenda/eventsAgenda';
+
 function Home() {
-    return(
-        <section className='home-page'>
-            
-            <section className='presentation'>
-                <section className='club-presentation'>
+  const [projects, setProjects] = useState<PublicProject[]>([]);
+  const [members, setMembers] = useState<PublicMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [contentError, setContentError] = useState(false);
 
-                
-                <div className='text'>
-                    <h1 className='fade-in-left'>Club de Desarrollo Experimental ExDev</h1>
-                    <h3 className='fade-in-right'>Somos un club que une los conceptos <strong>experimentar</strong> y <strong>desarrollar</strong>.
-                    </h3>
-                </div>
-                <div className='social-icons delay-2'>
-                    <a href='https://www.linkedin.com/company/exdevutem' target='_blank' rel='noopener noreferrer'>
-                        <LinkedInIcon className='social-icon' />
-                    </a>
-                    <a href='https://github.com/exdevutem' target='_blank' rel='noopener noreferrer'>
-                        <GitHubIcon className='social-icon' />
-                    </a>
-                    <a href='https://www.instagram.com/exdevutem' target='_blank' rel='noopener noreferrer'>
-                        <InstagramIcon className='social-icon instagram' />
-                    </a>
-                </div>
-                </section>
-        <div className='gallery fade-in-bottom delay-2'>
-            <img src={GalleryIMG1} alt='img1' />
-            <img src={GalleryIMG2} alt='img2' />
-            <img src={GalleryIMG3} alt='img1-duplicate' />
-            <img src={GalleryIMG4} alt='img2-duplicate' />
-      </div>
+  useEffect(() => {
+    const controller = new AbortController();
+    Promise.all([getPublicProjects(4, controller.signal), getPublicMembers(4, controller.signal)])
+      .then(([projectData, memberData]) => { setProjects(projectData); setMembers(memberData); })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        setContentError(true);
+      })
+      .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, []);
+
+  return (
+    <main className='home-page'>
+      <section className='presentation' aria-labelledby='home-title'>
+        <div className='club-presentation'>
+          <header className='text'>
+            <p className='home-eyebrow fade-in-left'>UTEM · EXDEV</p>
+            <h1 id='home-title' className='fade-in-left'>Club de Desarrollo Experimental</h1>
+            <p className='home-subtitle fade-in-right'>Somos un club que une los conceptos <strong>experimentar</strong> y <strong>desarrollar</strong>.</p>
+            <nav className='home-actions fade-in-right' aria-label='Acciones principales'>
+              <Link className='home-action home-action-primary' to='/apply'>Postular al club</Link>
+              <Link className='home-action home-action-secondary' to='/projects'>Ver proyectos</Link>
+            </nav>
+          </header>
+          <nav className='social-icons delay-2' aria-label='Redes sociales de ExDev'>
+            <a href='https://www.linkedin.com/company/exdevutem' target='_blank' rel='noopener noreferrer' aria-label='LinkedIn de ExDev'><LinkedInIcon className='social-icon' /></a>
+            <a href='https://github.com/exdevutem' target='_blank' rel='noopener noreferrer' aria-label='GitHub de ExDev'><GitHubIcon className='social-icon' /></a>
+            <a href='https://www.instagram.com/exdevutem' target='_blank' rel='noopener noreferrer' aria-label='Instagram de ExDev'><InstagramIcon className='social-icon instagram' /></a>
+          </nav>
+        </div>
+        <figure className='gallery fade-in-bottom delay-2' aria-label='Actividades de ExDev'>
+          <img src={GalleryIMG1} alt='Integrantes de ExDev en una actividad del club' />
+          <img src={GalleryIMG2} alt='Comunidad ExDev participando en una actividad' />
+          <img src={GalleryIMG3} alt='Presentación de ExDev en una feria universitaria' />
+          <img src={GalleryIMG4} alt='Stand de proyectos de ExDev' />
+        </figure>
       </section>
-      <section className='projects'>
-            <h2>Proyectos</h2>
-            <article className='project'>
-                <div className='project-image'>
-                    <img src={MiUTEMIMG} />
-                </div>
-                <div className='project-info'>
-                    <h3>Portal estudiantil Mi UTEM</h3>
-                    <p>
-                        Aplicación móvil desarrollada por estudiantes del club a comienzos de 2019, pensada para centralizar funciones útiles para la comunidad estudiantil.
-                        Actualmente estamos colaborando con el equipo de SISEI para convertirla en la aplicación oficial de la universidad.
-                    </p>
-                </div>
-            </article>
 
-            <article className='project'>
-                <div className='project-image'>
-                    <img src={SimRacingIMG} />
-                </div>
-                <div className='project-info'>
-                    <h3>Sim Racing</h3>
-                    <p>
-                        Proyecto de simulación de conducción con pedalera y caja de cambios artesanal. Utiliza tecnología de <em>force feedback</em> para replicar sensaciones reales al volante. 
-                        Todo controlado con una placa Arduino (ATmega32u4) y componentes diseñados por miembros del club.
-                    </p>
-                </div>
-            </article>
-
-            <article className='project'>
-                <div className='project-image'>
-                    <img src={ProjectWIMG} />
-                </div>
-                <div className='project-info'>
-                    <h3>Proyecto W</h3>
-                    <p>
-                        Vehículo autónomo basado en Arduino que utiliza sensores ultrasónicos para detectar obstáculos y tomar decisiones de movimiento de forma autónoma.
-                        Un ejemplo funcional de robótica aplicada y pensamiento lógico.
-                    </p>
-                </div>
-            </article>
-
-            <article className='project'>
-                <div className='project-image'>
-                    <img src={CharlaExdevIMG} />
-                </div>
-                <div className='project-info'>
-                    <h3>Talleres</h3>
-                    <p>
-                        Organizamos sesiones formativas abiertas donde miembros del club comparten conocimientos en áreas como modelado 3D, desarrollo full stack, Flutter, Arduino, entre otros.
-                        Aprendemos colaborativamente, creando comunidad técnica dentro y fuera del aula.
-                    </p>
-                </div>
-            </article>
+      <section className='content-preview' aria-labelledby='featured-projects-title'>
+        <header className='section-heading'>
+          <p className='section-kicker' id='featured-projects-title'>Proyectos</p>
+          <Link to='/projects'>Todos los proyectos <span aria-hidden='true'>→</span></Link>
+        </header>
+        {loading && <p className='content-message' role='status'>Cargando proyectos…</p>}
+        {!loading && contentError && <p className='content-message' role='alert'>No pudimos cargar los proyectos en este momento.</p>}
+        {!loading && !contentError && projects.length === 0 && <p className='content-message'>Aún no hay proyectos publicados.</p>}
+        {projects.length > 0 && <div className='content-grid projects-grid'>{projects.map((project) => <ProjectCard key={project.id} project={project} />)}</div>}
       </section>
-        </section>
-        
-    );
-    
+
+      <section className='content-preview events-preview' aria-labelledby='upcoming-events-title'>
+        <header className='events-heading'>
+          <h2 id='upcoming-events-title'>Lo que viene</h2>
+          <Link to='/events'>Agenda completa <span aria-hidden='true'>→</span></Link>
+        </header>
+        <EventsAgenda preview />
+      </section>
+
+      <section className='content-preview' aria-labelledby='members-title'>
+        <header className='section-heading'><div><p className='section-kicker'>Quiénes somos</p></div></header>
+        {loading && <p className='content-message' role='status'>Cargando miembros…</p>}
+        {!loading && contentError && <p className='content-message' role='alert'>No pudimos cargar los miembros en este momento.</p>}
+        {!loading && !contentError && members.length === 0 && <p className='content-message'>Aún no hay perfiles públicos.</p>}
+        {members.length > 0 && <div className='content-grid members-grid'>{members.map((member) => <MemberCard key={member.id} member={member} />)}</div>}
+      </section>
+    </main>
+  );
 }
 
 export default Home;
